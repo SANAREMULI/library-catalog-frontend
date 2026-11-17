@@ -13,8 +13,6 @@ export default function AdminBorrowRequestsPage() {
   const [updating, setUpdating] = useState('')
 
   const loadRequests = useCallback(async () => {
-    setLoading(true)
-    setError('')
     try {
       const payload = await apiRequest('/api/borrow-requests')
       setRequests(getList(payload, ['borrowRequests', 'requests', 'data', 'items', 'results']))
@@ -26,14 +24,14 @@ export default function AdminBorrowRequestsPage() {
   }, [])
 
   useEffect(() => {
-    // The request helper intentionally marks this initial fetch as loading.
-    // oxlint-disable-next-line react(set-state-in-effect)
-    loadRequests()
+    const timer = window.setTimeout(loadRequests, 0)
+    return () => window.clearTimeout(timer)
   }, [loadRequests])
 
   async function updateStatus(request, status) {
     const id = request.id ?? request._id
     setUpdating(String(id))
+    setLoading(true)
     setError('')
     setNotice('')
     try {

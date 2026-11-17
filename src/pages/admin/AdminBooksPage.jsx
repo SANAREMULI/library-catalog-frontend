@@ -14,8 +14,6 @@ export default function AdminBooksPage() {
   const [notice, setNotice] = useState('')
 
   const loadBooks = useCallback(async () => {
-    setLoading(true)
-    setError('')
     try {
       const payload = await apiRequest('/api/books')
       setBooks(getList(payload, ['books', 'data', 'items', 'results']))
@@ -27,9 +25,8 @@ export default function AdminBooksPage() {
   }, [])
 
   useEffect(() => {
-    // The request helper intentionally marks this initial fetch as loading.
-    // oxlint-disable-next-line react(set-state-in-effect)
-    loadBooks()
+    const timer = window.setTimeout(loadBooks, 0)
+    return () => window.clearTimeout(timer)
   }, [loadBooks])
 
   function updateForm(event) {
@@ -39,6 +36,7 @@ export default function AdminBooksPage() {
   async function saveBook(event) {
     event.preventDefault()
     setSaving(true)
+    setLoading(true)
     setError('')
     setNotice('')
     const { id, ...fields } = form
@@ -61,6 +59,7 @@ export default function AdminBooksPage() {
     const id = book.id ?? book._id ?? book.bookId
     if (!window.confirm(`Delete “${book.title || 'this book'}”?`)) return
     setError('')
+    setLoading(true)
     setNotice('')
     try {
       await apiRequest(`/api/books/${encodeURIComponent(id)}`, { method: 'DELETE' })
