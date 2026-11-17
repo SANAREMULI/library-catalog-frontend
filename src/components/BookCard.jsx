@@ -10,7 +10,7 @@ export default function BookCard({ book }) {
   const isSaved = readingList.some((item) => String(getBookId(item)) === String(id))
   const title = book?.title || 'Untitled book'
   const author = book?.author || book?.authors || 'Unknown author'
-  const genre = book?.genre || 'Uncategorized'
+  const genre = book?.genre?.name || book?.genre?.genre || book?.genre || 'Uncategorized'
   const cover = getCoverUrl(book)
 
   return (

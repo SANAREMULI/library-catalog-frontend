@@ -6,8 +6,9 @@ import StateMessage from '../components/StateMessage.jsx'
 
 function getSession(payload) {
   const data = payload?.data ?? payload
+  const user = data?.user ?? data?.profile ?? data
   return {
-    user: data?.user ?? data?.profile ?? data,
+    user: user?.username && !user?.name ? { ...user, name: user.username } : user,
     token: data?.token ?? data?.accessToken ?? data?.access_token ?? payload?.token,
   }
 }

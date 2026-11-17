@@ -27,8 +27,8 @@ export default function RegisterPage() {
       const data = payload?.data ?? payload
       const token = data?.token ?? data?.accessToken ?? data?.access_token ?? payload?.token
       const user = data?.user ?? data?.profile ?? data
-      if (token) {
-        acceptSession(user, token)
+      if (token || data?.user || data?.profile) {
+        acceptSession(user?.username && !user?.name ? { ...user, name: user.username } : user, token)
         navigate(location.state?.from?.pathname || '/booking', { replace: true })
       } else {
         navigate('/login', { replace: true, state: { ...location.state, message: 'Your account is ready. Sign in to continue.' } })

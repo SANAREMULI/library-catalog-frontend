@@ -50,13 +50,13 @@ export default function BookDetailPage() {
             {cover && !coverFailed ? <img src={cover} alt={`Cover of ${title}`} onError={() => setFailedCoverId(id)} /> : <div className="book-cover-fallback book-cover-fallback--large"><span className="book-cover-fallback__ornament">✳</span><span className="book-cover-fallback__title">{title}</span><span className="book-cover-fallback__author">{author}</span></div>}
         </div>
         <div className="book-detail__content">
-          <p className="eyebrow"><span /> {book.genre || 'From the collection'}</p>
+          <p className="eyebrow"><span /> {book.genre?.name || book.genre?.genre || book.genre || 'From the collection'}</p>
           <h1>{title}</h1>
           <p className="book-detail__author">by <strong>{author}</strong></p>
           <div className="detail-rule" />
           <p className="book-detail__description">{description}</p>
           <dl className="book-facts">
-            {(book.genre || book.category) && <div><dt>Genre</dt><dd>{book.genre || book.category}</dd></div>}
+            {(book.genre || book.category) && <div><dt>Genre</dt><dd>{book.genre?.name || book.genre?.genre || book.genre || book.category}</dd></div>}
             {book.isbn && <div><dt>ISBN</dt><dd>{book.isbn}</dd></div>}
             {book.publishedYear && <div><dt>Published</dt><dd>{book.publishedYear}</dd></div>}
             {book.publisher && <div><dt>Publisher</dt><dd>{book.publisher}</dd></div>}

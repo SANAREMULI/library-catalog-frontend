@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { apiGet } from '../lib/api.js'
+import { apiGet, apiPost } from '../lib/api.js'
 import { AuthContext } from './authContextValue.js'
 
 const TOKEN_KEY = 'open-shelf-auth-token'
@@ -46,10 +46,16 @@ export function AuthProvider({ children }) {
     setStatus('authenticated')
   }, [])
 
-  const logout = useCallback(() => {
-    removeSavedToken()
-    setUser(null)
-    setStatus('unauthenticated')
+  const logout = useCallback(async () => {
+    try {
+      await apiPost('/api/auth/logout', {})
+    } catch {
+      // Clear the visible session even if the API is currently unreachable.
+    } finally {
+      removeSavedToken()
+      setUser(null)
+      setStatus('unauthenticated')
+    }
   }, [])
 
   const value = useMemo(() => ({

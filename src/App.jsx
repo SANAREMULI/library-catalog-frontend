@@ -28,7 +28,7 @@ function App() {
         <Link className="brand" to="/" aria-label="Open Shelf home"><span className="brand__mark">O</span><span>open shelf<small>INDEPENDENT LIBRARY</small></span></Link>
         <nav className="header-nav" aria-label="Main navigation"><Link to="/">The collection</Link><Link to="/reading-list">Reading list <span className="nav-count">{readingList.length}</span></Link><Link to="/booking">Book a space</Link>{isLibrarian && <Link to="/admin/books">Admin</Link>}</nav>
         <div className="header-account">
-          {status === 'checking' ? <span className="header-note">Checking account…</span> : isAuthenticated ? <><span className="header-note">Hello, {user?.name || user?.firstName || user?.email || 'reader'}</span><button className="nav-action" type="button" onClick={logout}>Sign out</button></> : <><Link className="header-note" to="/login">Log in</Link><Link className="header-signup" to="/register">Join us <span aria-hidden="true">↗</span></Link></>}
+          {status === 'checking' ? <span className="header-note">Checking account…</span> : isAuthenticated ? <><span className="header-note">Hello, {user?.name || user?.username || user?.firstName || user?.email || 'reader'}</span><button className="nav-action" type="button" onClick={logout}>Sign out</button></> : <><Link className="header-note" to="/login">Log in</Link><Link className="header-signup" to="/register">Join us <span aria-hidden="true">↗</span></Link></>}
         </div>
       </header>
 
