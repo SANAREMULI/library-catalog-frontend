@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getBookId, getCoverUrl } from '../lib/api.js'
+import { useReadingList } from '../hooks/useReadingList.js'
 
 export default function BookCard({ book }) {
   const [coverFailed, setCoverFailed] = useState(false)
+  const { readingList, addBook, removeBook } = useReadingList()
   const id = getBookId(book)
+  const isSaved = readingList.some((item) => String(getBookId(item)) === String(id))
   const title = book?.title || 'Untitled book'
   const author = book?.author || book?.authors || 'Unknown author'
   const genre = book?.genre || 'Uncategorized'
@@ -31,6 +34,9 @@ export default function BookCard({ book }) {
           <span className="book-card__read">Explore book <span aria-hidden="true">↗</span></span>
         </div>
       </Link>
+      <button className={`reading-toggle${isSaved ? ' is-saved' : ''}`} type="button" onClick={() => isSaved ? removeBook(id) : addBook(book)} aria-pressed={isSaved}>
+        <span aria-hidden="true">{isSaved ? '✓' : '+'}</span> {isSaved ? 'Saved to your list' : 'Save for later'}
+      </button>
     </article>
   )
 }

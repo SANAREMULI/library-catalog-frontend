@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import StateMessage from '../components/StateMessage.jsx'
 import { apiGet, getBookId, getCoverUrl } from '../lib/api.js'
+import { useReadingList } from '../hooks/useReadingList.js'
 
 export default function BookDetailPage() {
   const { id } = useParams()
@@ -11,6 +12,7 @@ export default function BookDetailPage() {
   const book = loading ? null : detail.book
   const error = loading ? '' : detail.error
   const coverFailed = failedCoverId === id
+  const { readingList, addBook, removeBook } = useReadingList()
 
   useEffect(() => {
     const controller = new AbortController()
@@ -37,6 +39,7 @@ export default function BookDetailPage() {
   const title = book.title || 'Untitled book'
   const author = book.author || book.authors || 'Unknown author'
   const description = book.description || book.summary || 'There is no description for this title yet. Pick it up and discover the story for yourself.'
+  const isSaved = readingList.some((item) => String(getBookId(item)) === String(getBookId(book)))
 
   return (
     <section className="book-detail">
@@ -59,6 +62,9 @@ export default function BookDetailPage() {
             {book.pages && <div><dt>Pages</dt><dd>{book.pages}</dd></div>}
           </dl>
           <Link className="button button--dark" to="/">Keep exploring <span aria-hidden="true">↗</span></Link>
+          <button className={`reading-toggle reading-toggle--detail${isSaved ? ' is-saved' : ''}`} type="button" onClick={() => isSaved ? removeBook(getBookId(book)) : addBook(book)} aria-pressed={isSaved}>
+            <span aria-hidden="true">{isSaved ? '✓' : '+'}</span> {isSaved ? 'Saved to your reading list' : 'Add to my reading list'}
+          </button>
         </div>
       </div>
     </section>

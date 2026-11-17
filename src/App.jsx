@@ -2,21 +2,38 @@ import { Link, Route, Routes } from 'react-router-dom'
 import CatalogPage from './pages/CatalogPage.jsx'
 import BookDetailPage from './pages/BookDetailPage.jsx'
 import StateMessage from './components/StateMessage.jsx'
+import ReadingListPage from './pages/ReadingListPage.jsx'
+import LoginPage from './pages/LoginPage.jsx'
+import RegisterPage from './pages/RegisterPage.jsx'
+import BookingPage from './pages/BookingPage.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
+import { useAuth } from './hooks/useAuth.js'
+import { useReadingList } from './hooks/useReadingList.js'
 import './catalog.css'
+import './features.css'
 
 function App() {
+  const { isAuthenticated, status, user, logout } = useAuth()
+  const { readingList } = useReadingList()
+
   return (
     <div className="site-shell">
       <header className="site-header">
         <Link className="brand" to="/" aria-label="Open Shelf home"><span className="brand__mark">O</span><span>open shelf<small>INDEPENDENT LIBRARY</small></span></Link>
-        <nav className="header-nav" aria-label="Main navigation"><Link to="/">The collection</Link><a href="#about">Our little corner</a></nav>
-        <a className="header-note" href="#about">Made for the love of reading <span aria-hidden="true">↗</span></a>
+        <nav className="header-nav" aria-label="Main navigation"><Link to="/">The collection</Link><Link to="/reading-list">Reading list <span className="nav-count">{readingList.length}</span></Link><Link to="/booking">Book a space</Link></nav>
+        <div className="header-account">
+          {status === 'checking' ? <span className="header-note">Checking account…</span> : isAuthenticated ? <><span className="header-note">Hello, {user?.name || user?.firstName || user?.email || 'reader'}</span><button className="nav-action" type="button" onClick={logout}>Sign out</button></> : <><Link className="header-note" to="/login">Log in</Link><Link className="header-signup" to="/register">Join us <span aria-hidden="true">↗</span></Link></>}
+        </div>
       </header>
 
       <main>
         <Routes>
           <Route path="/" element={<CatalogPage />} />
           <Route path="/books/:id" element={<BookDetailPage />} />
+          <Route path="/reading-list" element={<ReadingListPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/booking" element={<ProtectedRoute><BookingPage /></ProtectedRoute>} />
           <Route path="*" element={<section className="detail-state"><StateMessage kind="empty" title="This page is a blank page">We couldn’t find what you were looking for.</StateMessage><Link className="text-link" to="/">← Back to the catalog</Link></section>} />
         </Routes>
       </main>
