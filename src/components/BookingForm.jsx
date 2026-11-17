@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { apiPost, getApiErrorMessage } from '../lib/api.js'
 
 const spaces = ['Reading Room', 'Quiet Study Desk', 'Community Table', 'Window Nook']
 
@@ -12,6 +13,7 @@ export default function BookingForm() {
   const [form, setForm] = useState({ space: '', date: '', startTime: '', endTime: '' })
   const [error, setError] = useState('')
   const [savedBooking, setSavedBooking] = useState(null)
+  const [submitting, setSubmitting] = useState(false)
 
   function updateField(event) {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }))
@@ -19,15 +21,23 @@ export default function BookingForm() {
     setSavedBooking(null)
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
+    setError('')
+    setSavedBooking(null)
     if (form.endTime <= form.startTime) {
       setError('Choose an end time that is later than your start time.')
-      setSavedBooking(null)
       return
     }
-    setError('')
-    setSavedBooking({ ...form })
+    setSubmitting(true)
+    try {
+      await apiPost('/api/bookings', form)
+      setSavedBooking({ ...form })
+    } catch (requestError) {
+      setError(getApiErrorMessage(requestError, 'Could not reserve this time. The space may already be booked.'))
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -45,9 +55,9 @@ export default function BookingForm() {
           <label htmlFor="booking-end">End time<input id="booking-end" type="time" name="endTime" value={form.endTime} onChange={updateField} required /></label>
         </div>
         {error && <p className="form-error" role="alert">{error}</p>}
-        <button className="button button--dark form-submit" type="submit">Review this booking <span aria-hidden="true">↗</span></button>
+        <button className="button button--dark form-submit" type="submit" disabled={submitting}>{submitting ? 'Checking availability…' : 'Reserve this space'} <span aria-hidden="true">↗</span></button>
       </form>
-      {savedBooking && <div className="booking-confirmation" role="status"><span className="booking-confirmation__icon" aria-hidden="true">✓</span><div><strong>Your visit is planned</strong><p>{savedBooking.space} · {savedBooking.date} · {savedBooking.startTime}–{savedBooking.endTime}</p><small>This is saved in this form only. Booking submission will be connected to the API in a future update.</small></div></div>}
+      {savedBooking && <div className="booking-confirmation" role="status"><span className="booking-confirmation__icon" aria-hidden="true">✓</span><div><strong>Your visit is booked</strong><p>{savedBooking.space} · {savedBooking.date} · {savedBooking.startTime}–{savedBooking.endTime}</p><small>The server confirmed the reservation.</small></div></div>}
     </div>
   )
 }

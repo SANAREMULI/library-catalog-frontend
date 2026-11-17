@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import StateMessage from '../components/StateMessage.jsx'
 import { apiGet, getBookId, getCoverUrl } from '../lib/api.js'
 import { useReadingList } from '../hooks/useReadingList.js'
+import BorrowRequestAction from '../components/BorrowRequestAction.jsx'
 
 export default function BookDetailPage() {
   const { id } = useParams()
@@ -65,6 +66,7 @@ export default function BookDetailPage() {
           <button className={`reading-toggle reading-toggle--detail${isSaved ? ' is-saved' : ''}`} type="button" onClick={() => isSaved ? removeBook(getBookId(book)) : addBook(book)} aria-pressed={isSaved}>
             <span aria-hidden="true">{isSaved ? '✓' : '+'}</span> {isSaved ? 'Saved to your reading list' : 'Add to my reading list'}
           </button>
+          <div className="detail-borrow-action"><BorrowRequestAction book={book} /></div>
         </div>
       </div>
     </section>

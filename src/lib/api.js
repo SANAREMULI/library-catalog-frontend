@@ -26,7 +26,7 @@ export async function apiRequest(path, { method = 'GET', body, signal } = {}) {
   if (body !== undefined) headers['Content-Type'] = 'application/json'
   if (token) headers.Authorization = `Bearer ${token}`
 
-  const response = await fetch(path, {
+  const response = await fetch(resolvePath(path), {
     method,
     headers,
     credentials: 'include',
@@ -52,11 +52,11 @@ export async function apiRequest(path, { method = 'GET', body, signal } = {}) {
 }
 
 export function apiGet(path, signal) {
-  return apiRequest(resolvePath(path), { signal })
+  return apiRequest(path, { signal })
 }
 
 export function apiPost(path, body, signal) {
-  return apiRequest(resolvePath(path), { method: 'POST', body, signal })
+  return apiRequest(path, { method: 'POST', body, signal })
 }
 
 export function getList(payload, keys = []) {
